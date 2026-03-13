@@ -4,21 +4,29 @@ import { ArrowLeftIcon, ArrowRightIcon } from '@heroicons/react/24/outline';
 import clsx from 'clsx';
 import Link from 'next/link';
 import { generatePagination } from '@/app/lib/utils';
+import { usePathname, useSearchParams } from 'next/navigation';
 
 export default function Pagination({ totalPages }: { totalPages: number }) {
   // NOTE: Uncomment this code in Chapter 10
-
-  // const allPages = generatePagination(currentPage, totalPages);
+  const pathname = usePathname();//pathname actual
+  const searchParams = useSearchParams();//parametros actuales
+  const currentPage = Number(searchParams.get('page')) || 1;//pagina actual
+  const createPageURL = (pageNumber: number | string) => {
+    const params = new URLSearchParams(searchParams);
+    params.set('page', pageNumber.toString());
+    return `${pathname}?${params.toString()}`;
+  };//es para ir cambiando para la pagina que se quiera dependiendo de lo que se le envie
+  const allPages = generatePagination(currentPage, totalPages);
 
   return (
     <>
       {/*  NOTE: Uncomment this code in Chapter 10 */}
 
-      {/* <div className="inline-flex">
+      <div className="inline-flex">
         <PaginationArrow
           direction="left"
-          href={createPageURL(currentPage - 1)}
-          isDisabled={currentPage <= 1}
+          href={createPageURL(currentPage - 1)}//una pagina para atras
+          isDisabled={currentPage <= 1}//si es menor que uno no se muestra
         />
 
         <div className="flex -space-x-px">
@@ -32,11 +40,11 @@ export default function Pagination({ totalPages }: { totalPages: number }) {
 
             return (
               <PaginationNumber
-                key={`${page}-${index}`}
-                href={createPageURL(page)}
-                page={page}
-                position={position}
-                isActive={currentPage === page}
+                key={`${page}-${index}`}//la key
+                href={createPageURL(page)}//esto es pa ir directo
+                page={page}//la pagina en si
+                position={position}//la posicion en donde esta
+                isActive={currentPage === page}//esto es si esta en esa pagina
               />
             );
           })}
@@ -44,10 +52,10 @@ export default function Pagination({ totalPages }: { totalPages: number }) {
 
         <PaginationArrow
           direction="right"
-          href={createPageURL(currentPage + 1)}
-          isDisabled={currentPage >= totalPages}
+          href={createPageURL(currentPage + 1)}//una pagina para alante
+          isDisabled={currentPage >= totalPages}//si es mayor al total no se muestra
         />
-      </div> */}
+      </div>
     </>
   );
 }
